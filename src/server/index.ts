@@ -1,6 +1,7 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import UserModel from './models/User.Model';
+import ProductModel from './models/Product.Model';
 
 export const app = express();
 
@@ -21,21 +22,27 @@ app.get('/api/test', (_, res) =>
     res.json({ greeting: "Hello" }
 ))
 
-// Test create route
-app.post('/api/user', async (_, res) => {
+// Get products
+app.get('/api/products', async (_, res) => {
     try {
-        const user = await UserModel.create({
-            firstName: "Jane",
-            lastName: "Smith",
-            email: "janesmith@email.com",
-            company: "Oak Tree LTD",
-            age: 39,
-            address: "15 Oak Avenue",
-            city: "Manchester",
-            county: "Greater Manchester",
-            postcode: "M5 2TY",
-            phone: "07887654321",
-            createdAt: new Date(),
+        const products = await ProductModel.find({});
+
+        res.status(200).json(products);
+    } catch (error) {
+        console.error(error);
+        res.sendStatus(500);
+    }
+})
+
+// Create products
+app.post('/api/product', async (_, res) => {
+    try {
+        const user = await ProductModel.create({
+            name: "Test Product",
+            price: 10,
+            img: "test-img.jpg",
+            type: "Prints",
+            stock: 10
         });
 
         console.log("success!");
@@ -43,6 +50,6 @@ app.post('/api/user', async (_, res) => {
         res.status(200).json(user);
     } catch (error) {
         console.error(error);
-        res.status(500).end();
+        res.sendStatus(500);
     }
 })
